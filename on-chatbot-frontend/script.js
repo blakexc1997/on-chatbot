@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       typingIndicator.style.display = "block";
   
       try {
-        const response = await fetch("http://localhost:5055/api/chat", {
+        const response = await fetch("https://on-chatbot-backend.onrender.com/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message }),
