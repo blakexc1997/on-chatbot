@@ -4,8 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>On Chatbot</title>
+  
+  <!-- Preload the custom font -->
+  <link rel="preload" href="fonts/diatype.otf" as="font" type="font/otf" crossorigin="anonymous" />
+
   <style>
-    /* General layout */
+    /* Import custom font */
+    @font-face {
+      font-family: "Diatype";
+      src: url("fonts/diatype.otf") format("opentype");
+      font-weight: normal;
+      font-style: normal;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -14,7 +25,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: Arial, sans-serif;
+      font-family: "Diatype", Arial, sans-serif;
       background-color: #f5f5f5;
       overflow: hidden;
     }
@@ -33,12 +44,12 @@
     }
 
     #logo {
-      max-height: 60px;
-      margin-bottom: 5px;
+      max-height: 70px;
+      margin-bottom: 10px;
     }
 
     #chat-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: bold;
       margin: 0;
     }
@@ -120,14 +131,17 @@
     }
   </style>
 </head>
+
 <body>
   <div id="chat-container">
     <div id="chat-header">
       <img id="logo" src="logo.png" alt="On Logo" />
       <h1 id="chat-title">On Chatbot</h1>
     </div>
+
     <div id="messages"></div>
     <div id="typing-indicator" style="display: none;">Seth is typing…</div>
+
     <div id="input-area">
       <input type="text" id="user-input" placeholder="Type your message..." />
       <button id="send-button">Send</button>

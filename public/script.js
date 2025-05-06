@@ -34,9 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const response = await fetch("https://on-chatbot-backend.onrender.com/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message }),
-        });
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });        
   
         const data = await response.json();
 if (data.reply) {
