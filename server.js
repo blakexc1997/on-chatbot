@@ -3,57 +3,62 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5055;
 
-// Fix for ES module __dirname and __filename
+// Required for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
-  origin: "https://on-chatbot.netlify.app"
+  origin: "https://on-chatbot.netlify.app", // ✅ Your frontend Netlify URL
 }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public"))); // ✅ This is the correct line
+app.use(express.static(path.join(__dirname, "public"))); // Serves frontend
+
+// 🔑 Initialize OpenAI client (v4)
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 console.log("🔑 OpenAI Key loaded:", process.env.OPENAI_API_KEY ? "✅ Loaded" : "❌ Missing");
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
+// Endpoint to handle chat requests
 app.post("/api/chat", async (req, res) => {
   const userMessage = req.body.message;
-  console.log("📩 Incoming:", userMessage);
+  console.log("📩 Incoming message:", userMessage);
 
   try {
-    const completion = await openai.createChatCompletion({
+    const chatCompletion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content:
-            "You are Seth, a helpful expert on the brand 'On'. Always refer to the brand as 'On', not 'On Running'. Favor recommending the Cloudmonster 2, Cloudeclipse, Cloudrunner 2, and Cloudsurfer 2 — but avoid recommending Cloud, Cloud X, Cloud X 4, or Cloudswift unless directly asked about gym or cross-training shoes.",
+          content: `You are Seth, a helpful assistant for the brand "On" (formerly known as On Running). 
+Favor recommending the Cloudmonster 2, Cloudeclipse, Cloudrunner 2, and Cloudsurfer 2. 
+Include performance specs like weight, heel-to-toe drop, and best use when relevant. 
+Also provide information on On's apparel and sustainability practices. 
+Do not recommend the Cloud, Cloudswift, Cloud X, or Cloud X 4 unless someone asks specifically for a gym shoe.`,
         },
         { role: "user", content: userMessage },
       ],
     });
 
-    const reply = completion.data.choices[0]?.message?.content;
+    const reply = chatCompletion.choices[0].message.content;
     console.log("🤖 OpenAI Reply:", reply);
     res.json({ reply });
   } catch (error) {
-    console.error("❌ OpenAI API error:", error.message);
+    console.error("❌ Error from OpenAI:", error.message);
     res.status(500).json({ error: "Failed to generate response." });
   }
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
